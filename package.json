@@ -1,0 +1,39 @@
+{
+  "name": "discuit-tools",
+  "displayName": "Discuit tools",
+  "version": "0.0.1",
+  "description": "Tools to help discuit.",
+  "author": "Headzoo <sean@headzoo.io>",
+  "scripts": {
+    "dev": "plasmo dev",
+    "build": "plasmo build",
+    "test": "plasmo test"
+  },
+  "dependencies": {
+    "@emotion/cache": "^11.11.0",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@headz/discuit": "^0.2.6",
+    "plasmo": "0.82.0",
+    "react": "18.2.0",
+    "react-custom-scrollbars": "^4.2.1",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "4.1.0",
+    "@types/chrome": "0.0.241",
+    "@types/node": "20.4.2",
+    "@types/react": "18.2.15",
+    "@types/react-dom": "18.2.7",
+    "prettier": "3.0.0",
+    "typescript": "5.1.6"
+  },
+  "manifest": {
+    "permissions": [
+      "scripting"
+    ],
+    "host_permissions": [
+      "https://*/*"
+    ]
+  }
+}
