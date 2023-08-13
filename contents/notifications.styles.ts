@@ -1,41 +1,70 @@
 import styled from '@emotion/styled';
 
-export const Container = styled.div`
+interface ContainerProps {
+  $open: boolean;
+}
+
+export const Container = styled.div<ContainerProps>`
   position: absolute;
   top: 46px;
   left: -180px;
   z-index: 1000;
   width: 400px;
-  // height: 400px;
-  padding: 1.5rem;
   background-color: #202020;
   border-radius: 5px;
   border: 1px solid #ffffff14;
   font-size: 14px;
-  display: flex;
+  display: ${(p) => (p.$open ? 'flex' : 'none')};
   flex-direction: column;
+
+  .dt-scrollbars {
+    transition: height 5s ease;
+  }
 `;
 
 export const Inner = styled.div`
-  margin: 1rem 0;
-  padding: 0;
+  margin: 0;
   list-style: none;
+  padding: 4px;
 `;
 
 export const Item = styled.a`
   display: flex;
   align-items: center;
-  padding: 0.75rem 0.5rem;
+  padding: 1.5rem;
   color: #ffffff;
   text-decoration: none;
   border-radius: 0.25rem;
 
   &:hover {
-    background-color: #ffffff14;
+    background-color: #242424;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px #ffffff80;
   }
 
   &.unseen {
     background-color: #ffffff14;
+
+    &:hover {
+      background-color: #ffffff1f;
+    }
+  }
+`;
+
+export const Body = styled.h3`
+  font-size: 1em;
+  font-weight: 500;
+  margin: 0;
+
+  .title {
+    display: inline;
+  }
+
+  .username {
+    display: inline;
   }
 `;
 
@@ -45,7 +74,8 @@ export const Icon = styled.div`
   min-width: 30px;
   border-radius: 50%;
   overflow: hidden;
-  margin-right: 1rem;
+  margin-right: 1.5rem;
+  flex-shrink: 0;
 
   img {
     width: 100%;
@@ -53,11 +83,18 @@ export const Icon = styled.div`
   }
 `;
 
+export const Empty = styled.div`
+  padding: 1.5rem;
+  text-align: center;
+`;
+
 export const Footer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
   text-transform: uppercase;
+  padding: 1.5rem;
+  background-color: #242424;
 
   a {
     color: #ffffff;
@@ -73,7 +110,7 @@ export const Header = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  text-transform: uppercase;
+  padding: 1.5rem;
 
   span {
     margin-right: 2rem;
