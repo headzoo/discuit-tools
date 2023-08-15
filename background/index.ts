@@ -1,5 +1,9 @@
 import { Storage } from '@plasmohq/storage';
 
+chrome.declarativeNetRequest.updateDynamicRules({
+  removeRuleIds: [1001]
+});
+
 /**
  * Changes the homepage default sort order.
  */

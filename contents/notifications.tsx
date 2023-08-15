@@ -6,7 +6,7 @@ import { createFocusTrap } from 'focus-trap';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { browserHasParentClass } from '~utils';
 import { renderTrackVertical, renderThumbVertical } from '~components/Scrollbars';
-import type { PlasmoCSConfig, PlasmoGetOverlayAnchor, PlasmoGetStyle } from '~node_modules/plasmo';
+import type { PlasmoCSConfig, PlasmoGetOverlayAnchor, PlasmoGetStyle } from 'plasmo';
 import Notification from '~components/Notification';
 import { Container, Inner, Footer, Header, Empty } from './notifications.styles';
 
@@ -61,7 +61,6 @@ const NotificationsPopup = (): React.ReactElement | null => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const countInterval = useRef(0);
-  const count = document.querySelector('.notifications-count') as HTMLElement | null;
   const [autoHeightMin, setAutoHeightMin] = useState(0);
   const container = useRef() as React.MutableRefObject<HTMLDivElement>;
   const focusTrap = useRef() as React.MutableRefObject<ReturnType<typeof createFocusTrap>>;
@@ -120,10 +119,20 @@ const NotificationsPopup = (): React.ReactElement | null => {
    * Changes the count badge on the notifications button.
    */
   useEffect(() => {
+    /**
+     * Sets the count badge.
+     */
     const setCount = () => {
-      if (count) {
-        count.classList.add('discuit-tools');
+      const button = document.querySelector(notificationsAnchor) as HTMLElement;
+      if (button) {
+        let count = document.querySelector('.notifications-count') as HTMLElement;
+        if (!count) {
+          count = document.createElement('div');
+          count.classList.add('count');
+          button.appendChild(count);
+        }
 
+        count.classList.add('discuit-tools');
         if (unreadCount > 0) {
           count.style.display = 'block';
           count.textContent = unreadCount.toString();
