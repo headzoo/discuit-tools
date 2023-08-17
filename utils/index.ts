@@ -32,27 +32,3 @@ export function browserHasParentClass(element, className) {
 export const insertAfter = (newNode: Element, existingNode: Element): void => {
   existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling);
 };
-
-/**
- * Returns the element matching the selector. Waits until it becomes available.
- *
- * @param selector The selector to match.
- * @param maxTries The maximum number of tries.
- */
-export const waitUntilElement = async <T extends HTMLElement>(
-  selector: string,
-  maxTries: number = 5
-): Promise<T | null> => {
-  let tries = 0;
-
-  do {
-    const element = document.querySelector(selector);
-    if (element) {
-      return element as T;
-    }
-    if (++tries >= maxTries) {
-      return null;
-    }
-    await sleep(1000);
-  } while (true);
-};

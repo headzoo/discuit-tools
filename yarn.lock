@@ -419,10 +419,10 @@
   dependencies:
     cross-spawn "^7.0.3"
 
-"@headz/discuit@^0.2.6":
-  version "0.2.6"
-  resolved "https://registry.yarnpkg.com/@headz/discuit/-/discuit-0.2.6.tgz#8233361c227dea24b746b9684bbc2d6c31c90869"
-  integrity sha512-GMKXJQz8of557BmvZalzZYPzau8WgaWV5w200zfAiXkIho/1rUltaYqSvLfObXB4SZq3pOSGGG2ITv2EN01wIg==
+"@headz/discuit@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@headz/discuit/-/discuit-0.5.1.tgz#8890f59f49dbe9985fdf62ef8466b27753293c22"
+  integrity sha512-aKIfNwYlLbGWwPSVUvq+qs0EeDPEJRL961F45QwerJgutCTMJxLO5tcGsG6vkvcf3BuxF0pzLBsLhkbXCjdqjg==
   dependencies:
     axios "^1.4.0"
     node-fetch "^3.3.2"
@@ -1525,6 +1525,11 @@
     semver "7.5.4"
     vue "3.3.4"
 
+"@plasmohq/storage@^0.8.1":
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/@plasmohq/storage/-/storage-0.8.2.tgz#e598300853ada3f5a8df56e79232dd5d5612ea2f"
+  integrity sha512-6L0rQ21k2si17q4wnd0+JCVKmz2vJL5NnCefi+ksGLTLUuGol8zHc/TGaQbJKthSCXJqFTfjYAntvYVvG1xPkw==
+
 "@plasmohq/storage@^1.7.2":
   version "1.7.2"
   resolved "https://registry.yarnpkg.com/@plasmohq/storage/-/storage-1.7.2.tgz#1be1594fdc048ed31d23dea84033f8e16af6d7f5"
@@ -1885,6 +1890,21 @@
   version "0.16.3"
   resolved "https://registry.yarnpkg.com/@types/scheduler/-/scheduler-0.16.3.tgz#cef09e3ec9af1d63d2a6cc5b383a737e24e6dcf5"
   integrity sha512-5cJ8CB4yAx7BH1oMvdU0Jh9lrEXyPkar6F9G/ERswkCuvP4KQZfZkSjcMbAICCpQTN4OuZn8tz0HiKv9TGZgrQ==
+
+"@types/webextension-polyfill@^0.9.0":
+  version "0.9.2"
+  resolved "https://registry.yarnpkg.com/@types/webextension-polyfill/-/webextension-polyfill-0.9.2.tgz#4459174d25e83b38fd6d2b2cacb0fc87ad99dfa4"
+  integrity sha512-op8YeoK60K6/GIx3snWs3JowBZ+/aeSnZzZuuwynA7VARWfzr3st9aQNk9RWfoBx5xqlNZjAsh2QttPUZnabCw==
+
+"@vantezzen/plasmo-state@^2.0.4":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@vantezzen/plasmo-state/-/plasmo-state-2.0.4.tgz#a3e93a6cab9b17926f850ace0aa4bda8b5eaaf3e"
+  integrity sha512-h40mm9XJLW4jQ3RDP4BrHwpeHv1HK6FlutQXpbcOyWv7XPy9+dxvVk+LlS3RMyVDitLQzOO+axooPDQGfUXGpQ==
+  dependencies:
+    "@plasmohq/storage" "^0.8.1"
+    "@types/webextension-polyfill" "^0.9.0"
+    debug "^4.3.4"
+    webextension-polyfill "^0.9.0"
 
 "@vue/compiler-core@3.3.4":
   version "3.3.4"
@@ -2533,7 +2553,7 @@ debug@^3.2.6:
   dependencies:
     ms "^2.1.1"
 
-debug@^4.1.0, debug@^4.3.1:
+debug@^4.1.0, debug@^4.3.1, debug@^4.3.4:
   version "4.3.4"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.4.tgz#1319f6579357f2338d3337d2cdd4914bb5dcc865"
   integrity sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==
@@ -3808,6 +3828,11 @@ node-addon-api@^7.0.0:
   resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-7.0.0.tgz#8136add2f510997b3b94814f4af1cce0b0e3962e"
   integrity sha512-vgbBJTS4m5/KkE16t5Ly0WW9hz46swAstv0hYYwMtbG7AznRhNyfLRe8HZAiWIpcHzoO7HxhLuBQj9rJ/Ho0ZA==
 
+node-creation-observer@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/node-creation-observer/-/node-creation-observer-1.2.0.tgz#7e6dfe65923e5f29157fa6370cf65f948da6ac44"
+  integrity sha512-S/HVbA86Yc2ZAQ6RRRl4p2uK3codtp/awhMGPECPAOw60E3zD27BDP5n3GHamxckAPQ/yRLLVcdET+BR2Ha8MA==
+
 node-domexception@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/node-domexception/-/node-domexception-1.0.0.tgz#6888db46a1f71c0b76b3f7555016b63fe64766e5"
@@ -4255,6 +4280,11 @@ react-is@^16.13.1, react-is@^16.7.0:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
+
+react-loading-skeleton@^3.3.1:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/react-loading-skeleton/-/react-loading-skeleton-3.3.1.tgz#cd6e3a626ee86c76a46c14e2379243f2f8834e1b"
+  integrity sha512-NilqqwMh2v9omN7LteiDloEVpFyMIa0VGqF+ukqp0ncVlYu1sKYbYGX9JEl+GtOT9TKsh04zCHAbavnQ2USldA==
 
 react-refresh@0.14.0:
   version "0.14.0"
@@ -4918,6 +4948,11 @@ web-streams-polyfill@^3.0.3:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/web-streams-polyfill/-/web-streams-polyfill-3.2.1.tgz#71c2718c52b45fd49dbeee88634b3a60ceab42a6"
   integrity sha512-e0MO3wdXWKrLbL0DgGnUV7WHVuw9OUvL4hjgnPkIeEvESk74gAITi5G606JtZPp39cd8HA9VQzCIvA49LpPN5Q==
+
+webextension-polyfill@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/webextension-polyfill/-/webextension-polyfill-0.9.0.tgz#de6c1941d0ef1b0858b20e9c7b46bbc042c5a960"
+  integrity sha512-LTtHb0yR49xa9irkstDxba4GATDAcDw3ncnFH9RImoFwDlW47U95ME5sn5IiQX2ghfaECaf6xyXM8yvClIBkkw==
 
 webidl-conversions@^4.0.2:
   version "4.0.2"

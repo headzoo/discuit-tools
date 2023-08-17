@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import type { Notification as DiscuitNotification } from '@headz/discuit';
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import { Item, Body, Icon } from './styles';
 
 export interface Props {
@@ -23,6 +24,10 @@ const Notification = ({ notification, onClick }: Props): React.ReactElement | nu
    */
   useEffect(() => {
     if (!post?.communityProPic?.url) {
+      const img = new Image();
+      img.src = post?.communityProPic?.url || '';
+      img.onload = () => setVisibility('visible');
+    } else {
       setVisibility('visible');
     }
   }, [post]);
@@ -31,17 +36,26 @@ const Notification = ({ notification, onClick }: Props): React.ReactElement | nu
     <Item
       tabIndex={0}
       href={href}
-      style={{ visibility }}
       onClick={(e) => onClick(e, notification)}
       className={notification.seen ? '' : 'unseen'}>
-      <Icon aria-hidden={true}>
-        {/* Wait until the image is loaded before making the notification visible. */}
-        <img src={post?.communityProPic?.url || ''} alt="" onLoad={() => setVisibility('visible')} />
-      </Icon>
-      <Body>
-        @{notification.notif.commentAuthor} replied to{' '}
-        {post.title.length > 50 ? `${post.title.substring(0, 50)}...` : post.title}
-      </Body>
+      {visibility === 'hidden' && (
+        <SkeletonTheme baseColor="#242424" highlightColor="#202020">
+          <span className="loading-pic" />
+          <Skeleton containerClassName="loading-container" count={2} />
+        </SkeletonTheme>
+      )}
+      {visibility === 'visible' && (
+        <>
+          <Icon aria-hidden={true}>
+            {/* Wait until the image is loaded before making the notification visible. */}
+            <img src={post?.communityProPic?.url || ''} alt="" onLoad={() => setVisibility('visible')} />
+          </Icon>
+          <Body>
+            @{notification.notif.commentAuthor} replied to{' '}
+            {post.title.length > 50 ? `${post.title.substring(0, 50)}...` : post.title}
+          </Body>
+        </>
+      )}
     </Item>
   );
 };
