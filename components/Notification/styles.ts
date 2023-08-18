@@ -14,6 +14,7 @@ export const Item = styled.a`
   color: #ffffff;
   text-decoration: none;
   border-radius: 0.25rem;
+  position: relative;
 
   &:hover {
     background-color: #242424;
@@ -103,5 +104,31 @@ export const Icon = styled.div`
   img {
     width: 100%;
     height: 100%;
+  }
+`;
+
+export const MenuDots = styled.svg`
+  width: 14px;
+  height: 14px;
+`;
+
+export const Menu = styled.ul`
+  position: absolute;
+  right: 25px;
+  bottom: -45px;
+  background-color: #363636;
+  width: 200px;
+  border-radius: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  z-index: 2;
+
+  li {
+    padding: 0.5rem;
+
+    &:hover {
+      background-color: #ffffff14;
+    }
   }
 `;

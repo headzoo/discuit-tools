@@ -29,6 +29,7 @@
       selectBar.replaceWith(filterButton);
     });
 
+    const hideNSFW = gmc.get('NoNSFW');
     const communities = gmc
       .get('Communities')
       .split(',')
@@ -42,13 +43,14 @@
 
     NodeCreationObserver.onCreation('.feed-item .community-link', (link) => {
       const item = link.closest('.feed-item');
+      const title = item.querySelector('.post-card-heading-title').textContent.toLowerCase();
       const communityName = link.getAttribute('href').slice(1).toLowerCase();
       const username = item
         .querySelector('.post-card-heading-by a')
         .textContent.replace(/[\s@]+/g, '')
         .toLowerCase();
 
-      if (communities.includes(communityName) || users.includes(username)) {
+      if (communities.includes(communityName) || users.includes(username) || (hideNSFW && title.includes('[nsfw]'))) {
         item.style.display = 'none';
       }
     });
@@ -67,6 +69,11 @@
         label: 'Comma separated list of users to filter out of your feed.',
         type: 'text',
         default: ''
+      },
+      NoNSFW: {
+        label: 'Hide NSFW posts.',
+        type: 'checkbox',
+        default: false
       }
     },
     css: `
@@ -96,8 +103,20 @@
         text-align: left;
       }
 
-      #DiscuitFilter_Communities_var {
+      #DiscuitFilter_Communities_var,
+      #DiscuitFilter_Users_var {
         margin-bottom: 1rem !important;
+      }
+
+      #DiscuitFilter_NoNSFW_var {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+      }
+
+      #DiscuitFilter_field_NoNSFW {
+        width: auto !important;
       }
 
       #DiscuitFilter_buttons_holder {
@@ -138,7 +157,7 @@
     frameStyle: `
       inset: 78px auto auto 236px;
       border: 1px solid rgb(0, 0, 0);
-      height: 276px;
+      height: 340px;
       width: 400px;
       margin: 0px;
       max-height: 95%;

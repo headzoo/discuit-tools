@@ -4,10 +4,12 @@ import { CacheProvider } from '@emotion/react';
 import { Discuit } from '@headz/discuit';
 import { createFocusTrap } from 'focus-trap';
 import { Scrollbars } from 'react-custom-scrollbars';
-import { browserHasParentClass } from '~utils';
+import { onCreation } from '~utils/NodeCreationObserver';
 import { renderTrackVertical, renderThumbVertical } from '~components/Scrollbars';
+import { browserHasParentClass } from '~utils';
 import type { PlasmoCSConfig, PlasmoGetOverlayAnchor, PlasmoGetStyle } from 'plasmo';
 import Notification from '~components/Notification';
+import Button from '~components/Button';
 import { Container, Inner, Footer, Header, Empty } from './notifications.styles';
 
 /**
@@ -46,6 +48,13 @@ export const getOverlayAnchor: PlasmoGetOverlayAnchor = async () => {
   return document.querySelector(notificationsAnchor);
 };
 
+export interface INotificationContext {
+  discuit: Discuit;
+  closeMenus: (() => void)[];
+}
+
+export const NotificationsContext = React.createContext({} as INotificationContext);
+
 /**
  * The Discuit instance.
  */
@@ -60,10 +69,11 @@ const NotificationsPopup = (): React.ReactElement | null => {
   const [isError, setError] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const countInterval = useRef(0);
+  const notificationsInterval = useRef(0);
   const [autoHeightMin, setAutoHeightMin] = useState(0);
   const container = useRef() as React.MutableRefObject<HTMLDivElement>;
   const focusTrap = useRef() as React.MutableRefObject<ReturnType<typeof createFocusTrap>>;
+  const closeMenus = useRef<(() => void)[]>([]);
 
   /**
    * Gets the notifications.
@@ -71,8 +81,10 @@ const NotificationsPopup = (): React.ReactElement | null => {
   const fetchNotifications = () => {
     discuit
       .getNotifications()
-      .then((_notifications) => {
-        const filtered = _notifications.items.splice(0, 5);
+      .then((resp) => {
+        const { items } = resp;
+        const filtered = Array.from(items).splice(0, 5);
+
         if (filtered.length === 0) {
           setAutoHeightMin(0);
         } else {
@@ -80,8 +92,8 @@ const NotificationsPopup = (): React.ReactElement | null => {
         }
 
         setNotifications(filtered);
+        setUnreadCount(items.filter((n) => !n.seen).length);
         setLoaded(true);
-        setUnreadCount(_notifications.items.filter((n) => !n.seen).length);
       })
       .catch((e) => {
         console.error(e);
@@ -91,38 +103,35 @@ const NotificationsPopup = (): React.ReactElement | null => {
   };
 
   /**
-   * Add event listeners to the notifications button.
+   * Add event listeners to the notifications button and start watching for new notifications.
    */
   useEffect(() => {
-    const button = document.querySelector(notificationsAnchor);
-    if (button) {
-      // Tell screen readers that the button controls the notifications popup.
-      button.setAttribute('aria-controls', 'dt-notifications');
+    fetchNotifications();
+    notificationsInterval.current = window.setInterval(fetchNotifications, 15000);
 
-      /**
-       * Handles clicks on the notifications button.
-       */
-      const handleButtonClick = (e: MouseEvent) => {
+    const off = onCreation(notificationsAnchor, (element) => {
+      element.setAttribute('aria-controls', notificationsAnchor.slice(1));
+      element.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
         setOpen(true);
-      };
-      button.addEventListener('click', handleButtonClick);
+      });
+    });
 
-      return () => {
-        button.removeEventListener('click', handleButtonClick);
-      };
-    }
+    return () => {
+      off();
+      clearInterval(notificationsInterval.current);
+    };
   }, []);
 
   /**
-   * Changes the count badge on the notifications button.
+   * Prevent discuit from adding the count to the title, because that count also includes
+   * upvote notifications.
    */
   useEffect(() => {
-    /**
-     * Sets the count badge.
-     */
+    // Set count badge.
     const setCount = () => {
+      console.log('setCount', unreadCount);
       const button = document.querySelector(notificationsAnchor) as HTMLElement;
       if (button) {
         let count = document.querySelector('.notifications-count') as HTMLElement;
@@ -143,47 +152,44 @@ const NotificationsPopup = (): React.ReactElement | null => {
       }
     };
 
-    // Prevent discuit from adding the count to the title, because that count also includes
-    // upvote notifications.
-    clearInterval(countInterval.current);
-    countInterval.current = window.setInterval(setCount, 500);
+    const offTitle = onCreation('title', setCount);
+    const offAnchor = onCreation(notificationsAnchor, setCount);
     setCount();
+
+    return () => {
+      offTitle();
+      offAnchor();
+    };
   }, [unreadCount]);
 
   /**
-   * Trap focus in the container when it opens. Also ensures the escape key closes the popup.
+   * Trap focus in the container when it opens and ensures the escape key closes the popup.
    */
   useEffect(() => {
     if (isOpen && !focusTrap.current) {
-      fetchNotifications();
-
-      /**
-       * Keep focus trapped inside the container for accessibility.
-       */
+      // Keep focus trapped inside the container for accessibility.
       focusTrap.current = createFocusTrap(container.current, {
-        clickOutsideDeactivates: true
+        clickOutsideDeactivates: true,
+        initialFocus: false
       });
       focusTrap.current.activate();
 
-      /**
-       * Handles clicks outside the popup.
-       */
+      // Handles clicks outside the popup.
       const handleDocClick = (e: MouseEvent) => {
         if (isOpen && !browserHasParentClass(e.target as HTMLElement, 'dt-notifications')) {
           setOpen(false);
         }
       };
-      document.addEventListener('click', handleDocClick, false);
+      document.addEventListener('click', handleDocClick);
 
-      /**
-       * Close the popup when the escape key is pressed.
-       */
+      // Close the popup when the escape key is pressed.
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Escape') {
+          console.log('first');
           setOpen(false);
         }
       };
-      document.addEventListener('keydown', handleKeyDown, false);
+      document.addEventListener('keydown', handleKeyDown);
 
       return () => {
         document.removeEventListener('keydown', handleKeyDown);
@@ -192,6 +198,12 @@ const NotificationsPopup = (): React.ReactElement | null => {
     } else if (!isOpen && focusTrap.current) {
       focusTrap.current.deactivate();
       focusTrap.current = null;
+
+      // We're closing, so close all the menus too.
+      for (let i = 0; i < closeMenus.current.length; i++) {
+        closeMenus.current[i]();
+      }
+      closeMenus.current = [];
 
       // Return focus to the notifications button when the popup closes.
       const button = document.querySelector(notificationsAnchor) as HTMLElement | null;
@@ -228,13 +240,12 @@ const NotificationsPopup = (): React.ReactElement | null => {
       <Container
         $open={isOpen}
         ref={container}
+        tabIndex={0}
         id="dt-notifications"
         className="dt-notifications"
-        tabIndex={0}
         aria-expanded={isOpen}>
         <Header>
-          <span
-            role="button"
+          <Button
             tabIndex={0}
             onClick={handleMarkRead}
             onKeyDown={async (e) => {
@@ -243,9 +254,8 @@ const NotificationsPopup = (): React.ReactElement | null => {
               }
             }}>
             Mark Read
-          </span>
-          <span
-            role="button"
+          </Button>
+          <Button
             tabIndex={0}
             onClick={handleMarkDeleted}
             onKeyDown={async (e) => {
@@ -254,41 +264,52 @@ const NotificationsPopup = (): React.ReactElement | null => {
               }
             }}>
             Mark Deleted
-          </span>
-          <span
-            role="button"
+          </Button>
+          <Button
             tabIndex={0}
+            className="dt-close"
             onClick={handleClose}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 handleClose();
               }
             }}>
-            Close
-          </span>
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512.001 512.001">
+              <path
+                d="M284.286,256.002L506.143,34.144c7.811-7.811,7.811-20.475,0-28.285c-7.811-7.81-20.475-7.811-28.285,0L256,227.717 L34.143,5.859c-7.811-7.811-20.475-7.811-28.285,0c-7.81,7.811-7.811,20.475,0,28.285l221.857,221.857L5.858,477.859 c-7.811,7.811-7.811,20.475,0,28.285c3.905,3.905,9.024,5.857,14.143,5.857c5.119,0,10.237-1.952,14.143-5.857L256,284.287 l221.857,221.857c3.905,3.905,9.024,5.857,14.143,5.857s10.237-1.952,14.143-5.857c7.811-7.811,7.811-20.475,0-28.285 L284.286,256.002z"
+                strokeWidth="2"
+              />
+            </svg>
+          </Button>
         </Header>
 
         {isError && <Empty>There was an error loading notifications</Empty>}
         {notifications.length === 0 && isLoaded && <Empty>No notifications</Empty>}
 
-        <Scrollbars
-          autoHeight
-          autoHeightMin={autoHeightMin}
-          renderTrackVertical={renderTrackVertical}
-          renderThumbVertical={renderThumbVertical}
-          className="dt-scrollbars">
-          <Inner>
-            {notifications.map((notification) => (
-              <Notification
-                key={notification.id}
-                notification={notification}
-                onClick={async () => {
-                  await discuit.markNotificationAsSeen(notification.id);
-                }}
-              />
-            ))}
-          </Inner>
-        </Scrollbars>
+        <NotificationsContext.Provider
+          value={{
+            discuit,
+            closeMenus: closeMenus.current
+          }}>
+          <Scrollbars
+            autoHeight
+            autoHeightMin={autoHeightMin}
+            renderTrackVertical={renderTrackVertical}
+            renderThumbVertical={renderThumbVertical}
+            className="dt-scrollbars">
+            <Inner role="list">
+              {notifications.map((notification) => (
+                <Notification
+                  key={notification.id}
+                  notification={notification}
+                  onClick={async () => {
+                    await discuit.markNotificationAsSeen(notification.id);
+                  }}
+                />
+              ))}
+            </Inner>
+          </Scrollbars>
+        </NotificationsContext.Provider>
         <Footer>
           <a href="/notifications">See All</a>
         </Footer>

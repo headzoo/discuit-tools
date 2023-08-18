@@ -38,6 +38,7 @@ export const Header = styled.div`
   align-items: center;
   justify-content: flex-end;
   padding: 1.5rem;
+  border-bottom: 1px solid #ffffff14;
 
   span {
     margin-right: 2rem;
@@ -50,6 +51,17 @@ export const Header = styled.div`
     &:last-of-type {
       margin-right: 0;
     }
+
+    &.dt-close {
+      top: 2px;
+      position: relative;
+    }
+  }
+
+  svg {
+    width: 12px;
+    height: 12px;
+    fill: currentColor;
   }
 `;
 
@@ -60,6 +72,7 @@ export const Footer = styled.div`
   text-transform: uppercase;
   padding: 1.5rem;
   background-color: #242424;
+  border-top: 1px solid #ffffff14;
 
   a {
     color: #ffffff;

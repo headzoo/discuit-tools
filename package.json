@@ -17,6 +17,7 @@
     "@plasmohq/messaging": "^0.5.0",
     "@plasmohq/storage": "^1.7.2",
     "@vantezzen/plasmo-state": "^2.0.4",
+    "classnames": "^2.3.2",
     "focus-trap": "^7.5.2",
     "node-creation-observer": "^1.2.0",
     "plasmo": "0.82.0",

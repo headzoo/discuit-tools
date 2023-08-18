@@ -65,19 +65,11 @@ function observe() {
   }
 }
 
-function removeListener(selector) {
-  // console.log('removing callback of the selector: ' + selector);
-  delete listeners[selector];
-  if (Object.keys(listeners).length == 0) {
-    stopObserving();
-  }
-}
-
 function stopObserving() {
   if (mutationObserver != null) {
     mutationObserver.disconnect();
     mutationObserver = null;
-    console.log('Stopped observing document');
+    // console.log('Stopped observing document');
   }
 }
 
@@ -89,18 +81,39 @@ export const onCreation = (
   selector: string,
   callback: (element: Element) => void,
   removeOnFirstMatch?: boolean
-): void => {
-  // console.log('Adding callback for selector: ' + selector);
+): (() => void) => {
   if (!listeners[selector]) {
     listeners[selector] = new ListenerContext(removeOnFirstMatch);
   }
   listeners[selector].callbacks.push(callback);
   observe();
-  if (document.querySelector(selector) != null) {
-    // console.log('Directly invoking callback: ' + selector);
+
+  if (document.querySelector(selector) !== null) {
     invokeCallbacks(selector);
   }
+
+  return () => {
+    removeListener(selector, callback);
+  };
 };
+
+function removeListener(selector, callback: (element: Element) => void) {
+  // console.log('removing callback of the selector: ' + selector);
+  if (listeners[selector]) {
+    const callbacks = listeners[selector].callbacks;
+    const index = callbacks.indexOf(callback);
+    if (index > -1) {
+      callbacks.splice(index, 1);
+    }
+  }
+  if (listeners[selector].callbacks.length == 0) {
+    delete listeners[selector];
+  }
+
+  if (Object.keys(listeners).length == 0) {
+    stopObserving();
+  }
+}
 
 export const stop = () => {
   listeners = {};
