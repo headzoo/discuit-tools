@@ -1,0 +1,22 @@
+.post-card-card--image {
+  .post-card-title {
+    flex-direction: column;
+  }
+
+  .post-card-link-image {
+    width: 100% !important;
+    height: 426px !important;
+    margin-top: 1rem;
+    margin-left: 0 !important;
+
+    img,
+    .post-card-link-image-img {
+      border-radius: var(--border-radius) !important;
+    }
+  }
+
+  .post-card-title .post-card-link-image .post-card-link-image-img {
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+}

@@ -90,6 +90,11 @@ export const Body = styled.h3`
   font-size: 1em;
   font-weight: 500;
   margin: 0;
+  --lh: 2rem;
+  --max-lines: 2;
+  line-height: var(--lh);
+  max-height: calc(var(--lh) * var(--max-lines));
+  overflow: hidden;
 `;
 
 export const Icon = styled.div`

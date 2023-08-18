@@ -20,7 +20,7 @@ export const renderTrackHorizontal = ({ style, ...props }) => {
     left: offset,
     height,
     opacity,
-    borderRadius,
+    borderRadius
   };
   return <div style={finalStyle} {...props} />;
 };
@@ -36,7 +36,7 @@ export const renderTrackVertical = ({ style, ...props }) => {
     top: offset,
     width,
     opacity,
-    borderRadius,
+    borderRadius
   };
   return <div style={finalStyle} {...props} />;
 };
@@ -48,7 +48,7 @@ export const renderThumbHorizontal = ({ style, ...props }) => {
   const finalStyle = {
     ...style,
     cursor: 'pointer',
-    borderRadius: 'inherit',
+    borderRadius: 'inherit'
   };
   return <div style={finalStyle} {...props} />;
 };
@@ -61,7 +61,7 @@ export const renderThumbVertical = ({ style, ...props }) => {
     ...style,
     cursor: 'pointer',
     borderRadius: 'inherit',
-    backgroundColor,
+    backgroundColor
   };
   return <div style={finalStyle} {...props} />;
 };

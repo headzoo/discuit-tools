@@ -43,7 +43,8 @@
 
     NodeCreationObserver.onCreation('.feed-item .community-link', (link) => {
       const item = link.closest('.feed-item');
-      const title = item.querySelector('.post-card-heading-title').textContent.toLowerCase();
+      const titleEl = item.querySelector('.post-card-heading-title');
+      const title = titleEl ? titleEl.textContent.toLowerCase() : '';
       const communityName = link.getAttribute('href').slice(1).toLowerCase();
       const username = item
         .querySelector('.post-card-heading-by a')

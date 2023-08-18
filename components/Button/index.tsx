@@ -1,5 +1,4 @@
 import React from 'react';
-import classNames from 'classnames';
 import { Component } from './styles';
 
 export interface Props {
@@ -27,7 +26,8 @@ const Button = ({
       className={`btn-${variant} ${className}`}
       tabIndex={tabIndex}
       onClick={onClick}
-      onKeyDown={onKeyDown}>
+      onKeyDown={onKeyDown}
+    >
       {children}
     </Component>
   );

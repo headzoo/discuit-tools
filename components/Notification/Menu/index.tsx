@@ -3,14 +3,22 @@ import { createFocusTrap } from 'focus-trap';
 import { Component } from './styles';
 
 export interface Props {
-  id: string;
+  id: number;
   onClose: () => void;
-  onRead: (e: React.MouseEvent, id: string) => void;
-  onDelete: (e: React.MouseEvent, id: string) => void;
+  onRead: (e: React.MouseEvent | React.KeyboardEvent, id: number) => void;
+  onDelete: (e: React.MouseEvent | React.KeyboardEvent, id: number) => void;
 }
 
+/**
+ * Renders the notification menu.
+ *
+ * @param id The notification id.
+ * @param onClose The callback to call when the menu is closed.
+ * @param onRead The callback to call when the notification is marked as read.
+ * @param onDelete The callback to call when the notification is deleted.
+ */
 const Menu = ({ id, onClose, onRead, onDelete }: Props): React.ReactElement | null => {
-  const container = useRef() as React.MutableRefObject<HTMLDivElement>;
+  const container = useRef() as React.MutableRefObject<HTMLUListElement>;
   const focusTrap = useRef() as React.MutableRefObject<ReturnType<typeof createFocusTrap>>;
 
   /**
@@ -48,7 +56,8 @@ const Menu = ({ id, onClose, onRead, onDelete }: Props): React.ReactElement | nu
           if (e.key === 'Enter') {
             onRead(e, id);
           }
-        }}>
+        }}
+      >
         Mark Read
       </li>
       <li
@@ -59,7 +68,8 @@ const Menu = ({ id, onClose, onRead, onDelete }: Props): React.ReactElement | nu
           if (e.key === 'Enter') {
             onDelete(e, id);
           }
-        }}>
+        }}
+      >
         Delete
       </li>
     </Component>

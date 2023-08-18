@@ -28,7 +28,7 @@ const Notification = ({ notification, onClick }: Props): React.ReactElement | nu
    * Sets the visibility of the notification.
    */
   useEffect(() => {
-    if (!post?.communityProPic?.url) {
+    if (post?.communityProPic?.url) {
       const img = new Image();
       img.src = post?.communityProPic?.url || '';
       img.onload = () => setVisibility('visible');
@@ -41,7 +41,7 @@ const Notification = ({ notification, onClick }: Props): React.ReactElement | nu
    * Prevents the notification from being clicked when the menu is clicked.
    * @param e
    */
-  const handleMenuClick = (e: React.MouseEvent) => {
+  const handleMenuClick = (e: React.MouseEvent | React.KeyboardEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -59,7 +59,7 @@ const Notification = ({ notification, onClick }: Props): React.ReactElement | nu
    * @param e
    * @param id
    */
-  const handleReadClick = (e: React.MouseEvent, id: string) => {};
+  const handleReadClick = (e: React.MouseEvent | React.KeyboardEvent, id: number) => {};
 
   /**
    * Deletes the notification.
@@ -67,15 +67,18 @@ const Notification = ({ notification, onClick }: Props): React.ReactElement | nu
    * @param e
    * @param id
    */
-  const handleDeleteClick = (e: React.MouseEvent, id: string) => {};
+  const handleDeleteClick = (e: React.MouseEvent | React.KeyboardEvent, id: number) => {};
 
   return (
     <Item
       tabIndex={0}
       href={href}
       role="listitem"
-      onClick={(e) => onClick(e, notification)}
-      className={notification.seen ? '' : 'unseen'}>
+      className={notification.seen ? '' : 'unseen'}
+      onClick={(e) => {
+        onClick(e, notification);
+      }}
+    >
       {visibility === 'hidden' && (
         <SkeletonTheme baseColor="#242424" highlightColor="#202020">
           <span className="loading-pic" />
@@ -85,11 +88,10 @@ const Notification = ({ notification, onClick }: Props): React.ReactElement | nu
       {visibility === 'visible' && (
         <>
           <Icon aria-hidden={true}>
-            <img src={post?.communityProPic?.url || ''} alt="" onLoad={() => setVisibility('visible')} />
+            <img src={post?.communityProPic?.url || '/favicon.png'} alt="" onLoad={() => setVisibility('visible')} />
           </Icon>
           <Body>
-            @{notification.notif.commentAuthor} replied to{' '}
-            {post.title.length > 50 ? `${post.title.substring(0, 50)}...` : post.title}
+            @{notification.notif.commentAuthor} replied to {post.title}
           </Body>
           <Button
             onClick={handleMenuClick}
@@ -97,7 +99,8 @@ const Notification = ({ notification, onClick }: Props): React.ReactElement | nu
               if (e.key === 'Enter') {
                 handleMenuClick(e);
               }
-            }}>
+            }}
+          >
             <MenuDots width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M5 14.75C3.48 14.75 2.25 13.52 2.25 12C2.25 10.48 3.48 9.25 5 9.25C6.52 9.25 7.75 10.48 7.75 12C7.75 13.52 6.52 14.75 5 14.75ZM5 10.75C4.31 10.75 3.75 11.31 3.75 12C3.75 12.69 4.31 13.25 5 13.25C5.69 13.25 6.25 12.69 6.25 12C6.25 11.31 5.69 10.75 5 10.75Z"
