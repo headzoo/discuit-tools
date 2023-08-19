@@ -2,12 +2,13 @@ import React, { useEffect, useState, useRef } from 'react';
 import createCache from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
 import { Discuit } from '@headz/discuit';
+import type { Notification as DiscuitNotification } from '@headz/discuit';
+import type { PlasmoCSConfig, PlasmoGetOverlayAnchor, PlasmoGetStyle } from 'plasmo';
 import { createFocusTrap } from 'focus-trap';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { onCreation } from '~utils/NodeCreationObserver';
 import { renderTrackVertical, renderThumbVertical } from '~components/Scrollbars';
 import { browserHasParentClass } from '~utils';
-import type { PlasmoCSConfig, PlasmoGetOverlayAnchor, PlasmoGetStyle } from 'plasmo';
 import Notification from '~components/Notification';
 import Button from '~components/Button';
 import { Container, Inner, Footer, Header, Empty } from './notifications.styles';
@@ -32,6 +33,13 @@ const styleCache = createCache({
 export const getStyle: PlasmoGetStyle = () => styleElement;
 
 /**
+ * Exports the notifications anchor to Plasmo.
+ */
+export const getOverlayAnchor: PlasmoGetOverlayAnchor = async () => {
+  return document.querySelector(notificationsAnchor);
+};
+
+/**
  * The height of a notification.
  */
 const notificationHeight = 60;
@@ -40,13 +48,6 @@ const notificationHeight = 60;
  * The notifications button.
  */
 const notificationsAnchor = '.notifications-button';
-
-/**
- * Exports the notifications anchor to Plasmo.
- */
-export const getOverlayAnchor: PlasmoGetOverlayAnchor = async () => {
-  return document.querySelector(notificationsAnchor);
-};
 
 export interface INotificationContext {
   discuit: Discuit;
@@ -67,10 +68,11 @@ const NotificationsPopup = (): React.ReactElement | null => {
   const [isOpen, setOpen] = useState(false);
   const [isLoaded, setLoaded] = useState(false);
   const [isError, setError] = useState(false);
-  const [notifications, setNotifications] = useState([]);
+  const [autoHeightMin, setAutoHeightMin] = useState(0);
+  const [notifications, setNotifications] = useState<DiscuitNotification[]>([]);
+  const [allNotifications, setAllNotifications] = useState<DiscuitNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const notificationsInterval = useRef(0);
-  const [autoHeightMin, setAutoHeightMin] = useState(0);
   const container = useRef() as React.MutableRefObject<HTMLDivElement>;
   const focusTrap = useRef() as React.MutableRefObject<ReturnType<typeof createFocusTrap>>;
   const closeMenus = useRef<(() => void)[]>([]);
@@ -93,6 +95,7 @@ const NotificationsPopup = (): React.ReactElement | null => {
         }
 
         setNotifications(filtered);
+        setAllNotifications(items);
         setUnreadCount(items.filter((n) => !n.seen).length);
         setLoaded(true);
       })
@@ -232,6 +235,9 @@ const NotificationsPopup = (): React.ReactElement | null => {
    */
   const handleMarkRead = async () => {
     await discuit.markAllNotificationsAsSeen();
+    const nextNotifications = notifications.map((n) => ({ ...n, seen: true }));
+    setNotifications(nextNotifications);
+    setUnreadCount(0);
   };
 
   /**
@@ -240,6 +246,7 @@ const NotificationsPopup = (): React.ReactElement | null => {
   const handleMarkDeleted = async () => {
     await discuit.deleteAllNotifications();
     setNotifications([]);
+    setUnreadCount(0);
   };
 
   /**
@@ -256,6 +263,14 @@ const NotificationsPopup = (): React.ReactElement | null => {
       nextNotifications[index].seen = true;
       setNotifications(nextNotifications);
     }
+
+    const nextAllNotifications = [...allNotifications];
+    const allIndex = nextAllNotifications.findIndex((n) => n.id === id);
+    if (allIndex !== -1) {
+      nextAllNotifications[allIndex].seen = true;
+      setAllNotifications(nextAllNotifications);
+      setUnreadCount(nextAllNotifications.filter((n) => !n.seen).length);
+    }
   };
 
   /**
@@ -271,6 +286,14 @@ const NotificationsPopup = (): React.ReactElement | null => {
       const nextNotifications = [...notifications];
       nextNotifications.splice(index, 1);
       setNotifications(nextNotifications);
+    }
+
+    const nextAllNotifications = [...allNotifications];
+    const allIndex = nextAllNotifications.findIndex((n) => n.id === id);
+    if (allIndex !== -1) {
+      nextAllNotifications.splice(index, 1);
+      setAllNotifications(nextAllNotifications);
+      setUnreadCount(nextAllNotifications.filter((n) => !n.seen).length);
     }
   };
 

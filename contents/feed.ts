@@ -1,18 +1,9 @@
 import type { PlasmoCSConfig, PlasmoGetStyle } from 'plasmo';
 import { sendToBackground } from '@plasmohq/messaging';
-import { onCreation } from '~utils/NodeCreationObserver';
-import styleText from 'data-text:./feed.scss';
 
 export const config: PlasmoCSConfig = {
   matches: ['https://discuit.net/*']
 };
-
-const head = document.querySelector('head');
-if (head) {
-  const style = document.createElement('style');
-  style.textContent = styleText;
-  head.appendChild(style);
-}
 
 /*onCreation('.user-card', (node) => {
   const newCard = document.createElement('header');
@@ -24,35 +15,6 @@ So, I'm a little normal.
 </p></div></div></div></div><div class="comm-main-created-at">Joined on 1 August 2023.</div></div>`;
   node.replaceWith(newCard);
 });*/
-
-onCreation('.post-card-card', (node) => {
-  const href = node.querySelector('.post-card-link-domain')?.getAttribute('href');
-  if (href && href.match(/\.(jpg|png|gif|jpeg)$/)) {
-    node.classList.add('post-card-card--image');
-
-    const imgWrap = node.querySelector('.post-card-link-image-img');
-    const img = imgWrap.querySelector('img');
-    if (img) {
-      const src = (img.getAttribute('src') || '').split('?', 2)[0];
-      if (src) {
-        img.setAttribute('src', src);
-        const loader = new Image();
-        loader.src = src;
-        loader.onload = () => {
-          imgWrap.style.backgroundImage = `url(${src})`;
-          const scale = loader.width / loader.height;
-          console.log(scale);
-          console.log(loader.width, loader.height, imgWrap.offsetWidth, imgWrap.offsetHeight);
-        };
-
-        /*setTimeout(() => {
-          imgWrap.style.backgroundImage = `url(${src})`;
-          console.log(imgWrap.outerHTML);
-        }, 100);*/
-      }
-    }
-  }
-});
 
 /*
 const handleClick = async (e: MouseEvent) => {

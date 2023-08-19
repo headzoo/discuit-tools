@@ -32,3 +32,45 @@ export function browserHasParentClass(element, className) {
 export const insertAfter = (newNode: Element, existingNode: Element): void => {
   existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling);
 };
+
+export const scaleImage = ({
+  width,
+  height,
+  maxWidth,
+  maxHeight
+}: {
+  width: number;
+  height: number;
+  maxWidth: number;
+  maxHeight: number;
+}): { height: number; width: number } => {
+  const widthRatio = maxWidth / width;
+  const heightRatio = maxHeight / height;
+  const bestRatio = Math.min(widthRatio, heightRatio);
+  const newWidth = width * bestRatio;
+  const newHeight = height * bestRatio;
+
+  return {
+    height: Math.ceil(newHeight),
+    width: Math.ceil(newWidth)
+  };
+};
+
+export const calculateNewDimensions = (originalWidth: number, originalHeight: number, maxWidth: number) => {
+  if (originalWidth <= maxWidth) {
+    // If the original width is already within the limit, no need to resize
+    return {
+      width: originalWidth,
+      height: originalHeight
+    };
+  }
+
+  const aspectRatio = originalWidth / originalHeight;
+  const newWidth = maxWidth;
+  const newHeight = Math.round(newWidth / aspectRatio);
+
+  return {
+    width: newWidth,
+    height: newHeight
+  };
+};
