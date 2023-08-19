@@ -4,6 +4,7 @@ import { Component } from './styles';
 
 export interface Props {
   id: number;
+  dark: boolean;
   onClose: () => void;
   onRead: (e: React.MouseEvent | React.KeyboardEvent, id: number) => void;
   onDelete: (e: React.MouseEvent | React.KeyboardEvent, id: number) => void;
@@ -13,11 +14,12 @@ export interface Props {
  * Renders the notification menu.
  *
  * @param id The notification id.
+ * @param dark Whether the menu is rendered in dark mode.
  * @param onClose The callback to call when the menu is closed.
  * @param onRead The callback to call when the notification is marked as read.
  * @param onDelete The callback to call when the notification is deleted.
  */
-const Menu = ({ id, onRead, onDelete, onClose }: Props): React.ReactElement | null => {
+const Menu = ({ id, dark, onRead, onDelete, onClose }: Props): React.ReactElement | null => {
   const container = useRef() as React.MutableRefObject<HTMLUListElement>;
   const focusTrap = useRef() as React.MutableRefObject<ReturnType<typeof createFocusTrap>>;
 
@@ -38,7 +40,7 @@ const Menu = ({ id, onRead, onDelete, onClose }: Props): React.ReactElement | nu
   }, []);
 
   return (
-    <Component ref={container} className="dt-notifications-menu">
+    <Component ref={container} $dark={dark} className="dt-notifications-menu">
       <li
         role="button"
         tabIndex={0}

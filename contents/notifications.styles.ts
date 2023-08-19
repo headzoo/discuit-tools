@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 
 interface ContainerProps {
   $open: boolean;
+  $dark: boolean;
 }
 
 export const Container = styled.div<ContainerProps>`
@@ -10,10 +11,11 @@ export const Container = styled.div<ContainerProps>`
   left: -180px;
   z-index: 1000;
   width: 400px;
-  background-color: #202020;
   border-radius: 5px;
-  border: 1px solid #ffffff14;
   font-size: 14px;
+  color: ${(p) => (p.$dark ? '#FFF' : '#323232')};
+  background-color: ${(p) => (p.$dark ? '#202020' : '#FFFFFF')};
+  border: 1px solid ${(p) => (p.$dark ? '#ffffff14' : 'transparent')};
   display: ${(p) => (p.$open ? 'flex' : 'none')};
   flex-direction: column;
 
@@ -65,17 +67,17 @@ export const Header = styled.div`
   }
 `;
 
-export const Footer = styled.div`
+export const Footer = styled.div<{ $dark: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
   text-transform: uppercase;
   padding: 1.5rem;
-  background-color: #242424;
   border-top: 1px solid #ffffff14;
+  background-color: ${(p) => (p.$dark ? '#242424' : '#ededed')};
 
   a {
-    color: #ffffff;
+    color: ${(p) => (p.$dark ? '#ffffff' : '#343434')};
     text-decoration: none;
 
     &:hover {

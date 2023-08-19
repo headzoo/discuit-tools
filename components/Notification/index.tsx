@@ -7,6 +7,7 @@ import Menu from './Menu';
 import { Item, Body, Icon, MenuDots } from './styles';
 
 export interface Props {
+  dark: boolean;
   notification: DiscuitNotification;
   onClick: (e: React.MouseEvent, notification: DiscuitNotification) => void;
   onRead: (e: React.MouseEvent | React.KeyboardEvent, id: number) => void;
@@ -16,12 +17,13 @@ export interface Props {
 /**
  * Renders a single notification.
  *
+ * @param dark Whether the notification is rendered in dark mode.
  * @param notification The notification to render.
  * @param onClick The callback to call when the notification is clicked.
  * @param onRead The callback to call when the notification is marked as read.
  * @param onDelete The callback to call when the notification is deleted.
  */
-const Notification = ({ notification, onClick, onRead, onDelete }: Props): React.ReactElement | null => {
+const Notification = ({ dark, notification, onClick, onRead, onDelete }: Props): React.ReactElement | null => {
   const { closeMenus } = useContext(NotificationsContext);
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [visibility, setVisibility] = useState<'hidden' | 'visible'>('hidden');
@@ -60,6 +62,7 @@ const Notification = ({ notification, onClick, onRead, onDelete }: Props): React
 
   return (
     <Item
+      $dark={dark}
       tabIndex={0}
       href={href}
       role="listitem"
@@ -108,6 +111,7 @@ const Notification = ({ notification, onClick, onRead, onDelete }: Props): React
           </Button>
           {isMenuOpen && (
             <Menu
+              dark={dark}
               id={notification.id}
               onRead={onRead}
               onDelete={onDelete}

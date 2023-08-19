@@ -7,18 +7,18 @@ const loading = keyframes`
   }
 `;
 
-export const Item = styled.a`
+export const Item = styled.a<{ $dark: boolean }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 1.5rem;
-  color: #ffffff;
+  color: inherit;
   text-decoration: none;
   border-radius: 0.25rem;
   position: relative;
 
   &:hover {
-    background-color: #242424;
+    background-color: ${(p) => (p.$dark ? '#2a2a2a' : '#ededed')};
   }
 
   &:focus {

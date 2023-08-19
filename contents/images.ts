@@ -42,7 +42,7 @@ onCreation('.post-card-card', (node) => {
           if (height > 600) {
             const viewMore = document.createElement('div');
             viewMore.classList.add('post-card-link-image-view-more');
-            viewMore.innerHTML = 'View';
+            viewMore.innerHTML = 'Full Image';
             imgWrap.appendChild(viewMore);
           }
         }

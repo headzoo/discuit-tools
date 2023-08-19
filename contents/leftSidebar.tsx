@@ -41,7 +41,7 @@ let user: User | undefined;
  */
 const LeftSidebar = (): React.ReactElement | null => {
   /**
-   * Adds the "MODERATE" topic to the left sidebar.
+   * Adds the "MODERATING" topic to the left sidebar.
    */
   useEffect(() => {
     /**
@@ -79,7 +79,7 @@ const LeftSidebar = (): React.ReactElement | null => {
     onCreation('.sidebar-item[href="/guidelines"]', async (sidebarItem) => {
       const topic = document.createElement('div');
       topic.className = 'sidebar-topic';
-      topic.innerHTML = 'MODERATE';
+      topic.innerHTML = 'MODERATING';
       insertAfter(topic, sidebarItem);
 
       if (!user) {

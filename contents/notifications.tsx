@@ -68,6 +68,7 @@ const NotificationsPopup = (): React.ReactElement | null => {
   const [isOpen, setOpen] = useState(false);
   const [isLoaded, setLoaded] = useState(false);
   const [isError, setError] = useState(false);
+  const [isDarkTheme, setDarkTheme] = useState(false);
   const [autoHeightMin, setAutoHeightMin] = useState(0);
   const [notifications, setNotifications] = useState<DiscuitNotification[]>([]);
   const [allNotifications, setAllNotifications] = useState<DiscuitNotification[]>([]);
@@ -120,6 +121,9 @@ const NotificationsPopup = (): React.ReactElement | null => {
    * Add event listeners to the notifications button and start watching for new notifications.
    */
   useEffect(() => {
+    const element = document.querySelector('html') as HTMLElement;
+    setDarkTheme(element && element.classList.contains('theme-dark'));
+
     fetchNotifications();
     notificationsInterval.current = window.setInterval(fetchNotifications, 15000);
 
@@ -308,6 +312,7 @@ const NotificationsPopup = (): React.ReactElement | null => {
     <CacheProvider value={styleCache}>
       <Container
         $open={isOpen}
+        $dark={isDarkTheme}
         ref={container}
         tabIndex={0}
         id="dt-notifications"
@@ -379,6 +384,7 @@ const NotificationsPopup = (): React.ReactElement | null => {
               {notifications.map((notification) => (
                 <Notification
                   key={notification.id}
+                  dark={isDarkTheme}
                   notification={notification}
                   onRead={handleRead}
                   onDelete={handleDelete}
@@ -390,7 +396,7 @@ const NotificationsPopup = (): React.ReactElement | null => {
             </Inner>
           </Scrollbars>
         </NotificationsContext.Provider>
-        <Footer className="dt-notifications-footer">
+        <Footer $dark={isDarkTheme} className="dt-notifications-footer">
           <a href="/notifications">See All</a>
         </Footer>
       </Container>

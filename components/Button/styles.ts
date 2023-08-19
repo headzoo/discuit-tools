@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 
 export const Component = styled.button`
-  color: #ffffff;
+  color: inherit;
   background-color: transparent;
   border: none;
   padding: 6px 12px;
@@ -17,6 +17,7 @@ export const Component = styled.button`
   transition: all 0ms;
 
   &:hover {
+    color: #fff;
     background-color: #646464;
   }
 

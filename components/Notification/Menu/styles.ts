@@ -1,10 +1,10 @@
 import styled from '@emotion/styled';
 
-export const Component = styled.ul`
+export const Component = styled.ul<{ $dark: boolean }>`
   position: absolute;
   right: 58px;
   bottom: -1px;
-  background-color: #363636;
+  background-color: ${(p) => (p.$dark ? '#202020' : '#ededed')};
   width: 200px;
   border-radius: 5px;
   margin: 0;
@@ -16,7 +16,7 @@ export const Component = styled.ul`
     padding: 0.75rem 1rem;
 
     &:hover {
-      background-color: #ffffff14;
+      background-color: ${(p) => (p.$dark ? '#ffffff14' : 'rgba(146,146,146,0.08)')};
     }
   }
 `;
