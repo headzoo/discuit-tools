@@ -50,7 +50,7 @@ export const getOverlayAnchor: PlasmoGetOverlayAnchor = async () => {
 
 export interface INotificationContext {
   discuit: Discuit;
-  closeMenus: (() => void)[];
+  closeMenus: { current: (() => void)[] };
 }
 
 export const NotificationsContext = React.createContext({} as INotificationContext);
@@ -88,7 +88,8 @@ const NotificationsPopup = (): React.ReactElement | null => {
         if (filtered.length === 0) {
           setAutoHeightMin(0);
         } else {
-          setAutoHeightMin(filtered.length * notificationHeight < 250 ? filtered.length * notificationHeight : 250);
+          const height = filtered.length * notificationHeight;
+          setAutoHeightMin(height < 250 ? height : 250);
         }
 
         setNotifications(filtered);
@@ -100,6 +101,16 @@ const NotificationsPopup = (): React.ReactElement | null => {
         setError(true);
         setLoaded(true);
       });
+  };
+
+  /**
+   * Closes all open menus.
+   */
+  const closeOpenMenus = () => {
+    for (let i = 0; i < closeMenus.current.length; i++) {
+      closeMenus.current[i]();
+    }
+    closeMenus.current = [];
   };
 
   /**
@@ -175,17 +186,24 @@ const NotificationsPopup = (): React.ReactElement | null => {
 
       // Handles clicks outside the popup.
       const handleDocClick = (e: MouseEvent) => {
-        if (isOpen && !browserHasParentClass(e.target as HTMLElement, 'dt-notifications')) {
+        const target = e.target as HTMLElement;
+        if (isOpen && target.tagName !== 'PLASMO-CSUI' && !browserHasParentClass(target, 'dt-notifications')) {
           setOpen(false);
         }
       };
       document.addEventListener('click', handleDocClick);
 
-      // Close the popup when the escape key is pressed.
+      // Close the opened menu or the whole popup when the escape key is pressed.
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Escape') {
-          console.log('first');
-          setOpen(false);
+          if (closeMenus.current.length > 0) {
+            for (let i = 0; i < closeMenus.current.length; i++) {
+              closeMenus.current[i]();
+            }
+            closeMenus.current = [];
+          } else {
+            setOpen(false);
+          }
         }
       };
       document.addEventListener('keydown', handleKeyDown);
@@ -199,10 +217,7 @@ const NotificationsPopup = (): React.ReactElement | null => {
       focusTrap.current = null;
 
       // We're closing, so close all the menus too.
-      for (let i = 0; i < closeMenus.current.length; i++) {
-        closeMenus.current[i]();
-      }
-      closeMenus.current = [];
+      closeOpenMenus();
 
       // Return focus to the notifications button when the popup closes.
       const button = document.querySelector(notificationsAnchor) as HTMLElement | null;
@@ -228,6 +243,38 @@ const NotificationsPopup = (): React.ReactElement | null => {
   };
 
   /**
+   * Marks the notification as read.
+   *
+   * @param e
+   * @param id
+   */
+  const handleRead = async (e: React.MouseEvent | React.KeyboardEvent, id: number) => {
+    await discuit.markNotificationAsSeen(id);
+    const index = notifications.findIndex((n) => n.id === id);
+    if (index !== -1) {
+      const nextNotifications = [...notifications];
+      nextNotifications[index].seen = true;
+      setNotifications(nextNotifications);
+    }
+  };
+
+  /**
+   * Deletes the notification.
+   *
+   * @param e
+   * @param id
+   */
+  const handleDelete = async (e: React.MouseEvent | React.KeyboardEvent, id: number) => {
+    await discuit.deleteNotification(id);
+    const index = notifications.findIndex((n) => n.id === id);
+    if (index !== -1) {
+      const nextNotifications = [...notifications];
+      nextNotifications.splice(index, 1);
+      setNotifications(nextNotifications);
+    }
+  };
+
+  /**
    * Handles the close button click.
    */
   const handleClose = () => {
@@ -243,6 +290,9 @@ const NotificationsPopup = (): React.ReactElement | null => {
         id="dt-notifications"
         className="dt-notifications"
         aria-expanded={isOpen}
+        onClick={(e) => {
+          closeOpenMenus();
+        }}
       >
         <Header>
           <Button
@@ -292,7 +342,7 @@ const NotificationsPopup = (): React.ReactElement | null => {
         <NotificationsContext.Provider
           value={{
             discuit,
-            closeMenus: closeMenus.current
+            closeMenus: closeMenus
           }}
         >
           <Scrollbars
@@ -307,6 +357,8 @@ const NotificationsPopup = (): React.ReactElement | null => {
                 <Notification
                   key={notification.id}
                   notification={notification}
+                  onRead={handleRead}
+                  onDelete={handleDelete}
                   onClick={async () => {
                     await discuit.markNotificationAsSeen(notification.id);
                   }}
@@ -315,7 +367,7 @@ const NotificationsPopup = (): React.ReactElement | null => {
             </Inner>
           </Scrollbars>
         </NotificationsContext.Provider>
-        <Footer>
+        <Footer className="dt-notifications-footer">
           <a href="/notifications">See All</a>
         </Footer>
       </Container>

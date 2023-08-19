@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import type { Notification as DiscuitNotification } from '@headz/discuit';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import Button from '~components/Button';
@@ -9,6 +9,8 @@ import { Item, Body, Icon, MenuDots } from './styles';
 export interface Props {
   notification: DiscuitNotification;
   onClick: (e: React.MouseEvent, notification: DiscuitNotification) => void;
+  onRead: (e: React.MouseEvent | React.KeyboardEvent, id: number) => void;
+  onDelete: (e: React.MouseEvent | React.KeyboardEvent, id: number) => void;
 }
 
 /**
@@ -16,16 +18,19 @@ export interface Props {
  *
  * @param notification The notification to render.
  * @param onClick The callback to call when the notification is clicked.
+ * @param onRead The callback to call when the notification is marked as read.
+ * @param onDelete The callback to call when the notification is deleted.
  */
-const Notification = ({ notification, onClick }: Props): React.ReactElement | null => {
+const Notification = ({ notification, onClick, onRead, onDelete }: Props): React.ReactElement | null => {
   const { closeMenus } = useContext(NotificationsContext);
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [visibility, setVisibility] = useState<'hidden' | 'visible'>('hidden');
+  const menuButton = useRef() as React.MutableRefObject<HTMLButtonElement>;
   const { post } = notification.notif;
   const href = `/${post.communityName}/post/${post.publicId}/${notification.notif.commentId}`;
 
   /**
-   * Sets the visibility of the notification.
+   * Sets the visibility of the notification once the community image is loaded.
    */
   useEffect(() => {
     if (post?.communityProPic?.url) {
@@ -46,28 +51,12 @@ const Notification = ({ notification, onClick }: Props): React.ReactElement | nu
     e.stopPropagation();
 
     const nextOpenState = !isMenuOpen;
-    for (let i = 0; i < closeMenus.length; i++) {
-      closeMenus[i]();
+    for (let i = 0; i < closeMenus.current.length; i++) {
+      closeMenus.current[i]();
     }
     setMenuOpen(nextOpenState);
-    closeMenus.push(() => setMenuOpen(false));
+    closeMenus.current = [() => setMenuOpen(false)];
   };
-
-  /**
-   * Marks the notification as read.
-   *
-   * @param e
-   * @param id
-   */
-  const handleReadClick = (e: React.MouseEvent | React.KeyboardEvent, id: number) => {};
-
-  /**
-   * Deletes the notification.
-   *
-   * @param e
-   * @param id
-   */
-  const handleDeleteClick = (e: React.MouseEvent | React.KeyboardEvent, id: number) => {};
 
   return (
     <Item
@@ -94,6 +83,7 @@ const Notification = ({ notification, onClick }: Props): React.ReactElement | nu
             @{notification.notif.commentAuthor} replied to {post.title}
           </Body>
           <Button
+            ref={menuButton}
             onClick={handleMenuClick}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
@@ -119,9 +109,12 @@ const Notification = ({ notification, onClick }: Props): React.ReactElement | nu
           {isMenuOpen && (
             <Menu
               id={notification.id}
-              onClose={() => setMenuOpen(false)}
-              onRead={handleReadClick}
-              onDelete={handleDeleteClick}
+              onRead={onRead}
+              onDelete={onDelete}
+              onClose={() => {
+                setMenuOpen(false);
+                menuButton.current?.focus();
+              }}
             />
           )}
         </>

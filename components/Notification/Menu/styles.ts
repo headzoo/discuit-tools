@@ -2,8 +2,8 @@ import styled from '@emotion/styled';
 
 export const Component = styled.ul`
   position: absolute;
-  right: 25px;
-  bottom: -45px;
+  right: 58px;
+  bottom: -1px;
   background-color: #363636;
   width: 200px;
   border-radius: 5px;

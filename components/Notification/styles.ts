@@ -10,6 +10,7 @@ const loading = keyframes`
 export const Item = styled.a`
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 1.5rem;
   color: #ffffff;
   text-decoration: none;
@@ -95,6 +96,7 @@ export const Body = styled.h3`
   line-height: var(--lh);
   max-height: calc(var(--lh) * var(--max-lines));
   overflow: hidden;
+  flex-grow: 1;
 `;
 
 export const Icon = styled.div`

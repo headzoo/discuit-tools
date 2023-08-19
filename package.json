@@ -14,7 +14,7 @@
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "@headz/discuit": "^0.5.1",
+    "@headz/discuit": "^0.5.2",
     "@plasmohq/messaging": "^0.5.0",
     "@plasmohq/storage": "^1.7.2",
     "@vantezzen/plasmo-state": "^2.0.4",

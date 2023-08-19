@@ -17,7 +17,7 @@ export interface Props {
  * @param onRead The callback to call when the notification is marked as read.
  * @param onDelete The callback to call when the notification is deleted.
  */
-const Menu = ({ id, onClose, onRead, onDelete }: Props): React.ReactElement | null => {
+const Menu = ({ id, onRead, onDelete, onClose }: Props): React.ReactElement | null => {
   const container = useRef() as React.MutableRefObject<HTMLUListElement>;
   const focusTrap = useRef() as React.MutableRefObject<ReturnType<typeof createFocusTrap>>;
 
@@ -31,30 +31,27 @@ const Menu = ({ id, onClose, onRead, onDelete }: Props): React.ReactElement | nu
     });
     focusTrap.current.activate();
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-        e.stopPropagation();
-        e.preventDefault();
-      }
-    };
-    document.addEventListener('keydown', handleKeyDown);
-
     return () => {
       focusTrap.current.deactivate();
-      document.removeEventListener('keydown', handleKeyDown);
+      onClose();
     };
   }, []);
 
   return (
-    <Component ref={container}>
+    <Component ref={container} className="dt-notifications-menu">
       <li
         role="button"
         tabIndex={0}
-        onClick={(e) => onRead(e, id)}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          onRead(e, id);
+          onClose();
+        }}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
             onRead(e, id);
+            onClose();
           }
         }}
       >
@@ -63,10 +60,16 @@ const Menu = ({ id, onClose, onRead, onDelete }: Props): React.ReactElement | nu
       <li
         role="button"
         tabIndex={0}
-        onClick={(e) => onDelete(e, id)}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          onDelete(e, id);
+          onClose();
+        }}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
             onDelete(e, id);
+            onClose();
           }
         }}
       >
