@@ -8,7 +8,7 @@ import { createFocusTrap } from 'focus-trap';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { onCreation } from '~utils/NodeCreationObserver';
 import { renderTrackVertical, renderThumbVertical } from '~components/Scrollbars';
-import { browserHasParentClass } from '~utils';
+import { browserHasParentClass, isDarkMode } from '~utils';
 import Notification from '~components/Notification';
 import Button from '~components/Button';
 import { Container, Inner, Footer, Header, Empty } from './notifications.styles';
@@ -18,7 +18,7 @@ import { Container, Inner, Footer, Header, Empty } from './notifications.styles'
  */
 export const config: PlasmoCSConfig = {
   matches: ['https://discuit.net/*'],
-  world: 'MAIN'
+  css: ['../assets/fonts.css']
 };
 
 /**
@@ -77,6 +77,7 @@ const NotificationsPopup = (): React.ReactElement | null => {
   const container = useRef() as React.MutableRefObject<HTMLDivElement>;
   const focusTrap = useRef() as React.MutableRefObject<ReturnType<typeof createFocusTrap>>;
   const closeMenus = useRef<(() => void)[]>([]);
+  const mutatingTitle = useRef(false);
 
   /**
    * Gets the notifications.
@@ -121,9 +122,7 @@ const NotificationsPopup = (): React.ReactElement | null => {
    * Add event listeners to the notifications button and start watching for new notifications.
    */
   useEffect(() => {
-    const element = document.querySelector('html') as HTMLElement;
-    setDarkTheme(element && element.classList.contains('theme-dark'));
-
+    setDarkTheme(isDarkMode());
     fetchNotifications();
     notificationsInterval.current = window.setInterval(fetchNotifications, 15000);
 
@@ -143,12 +142,11 @@ const NotificationsPopup = (): React.ReactElement | null => {
   }, []);
 
   /**
-   * Prevent discuit from adding the count to the title, because that count also includes
-   * upvote notifications.
+   * Prevent discuit from adding the count to the title.
    */
   useEffect(() => {
     // Set count badge.
-    const setCount = () => {
+    const mutateCount = () => {
       const button = document.querySelector(notificationsAnchor) as HTMLElement;
       if (button) {
         let count = document.querySelector('.notifications-count') as HTMLElement;
@@ -158,24 +156,40 @@ const NotificationsPopup = (): React.ReactElement | null => {
           button.appendChild(count);
         }
 
+        console.log(unreadCount, document.querySelector('title'));
+
         count.classList.add('discuit-tools');
-        if (unreadCount > 0) {
+        if (unreadCount > 0 && count.style.display !== 'block') {
           count.style.display = 'block';
           count.textContent = unreadCount.toString();
-        } else {
+        } else if (unreadCount === 0 && count.style.display !== 'none') {
           count.style.display = 'none';
-          document.title = document.title.replace(/\(\d+\)/, '');
         }
+
+        document.title =
+          unreadCount > 0
+            ? (document.title = `(${unreadCount}) ${document.title.replace(/\(\d+\)/, '')}`)
+            : document.title.replace(/\(\d+\)/, '');
       }
     };
 
-    const offTitle = onCreation('title', setCount);
-    const offAnchor = onCreation(notificationsAnchor, setCount);
-    setCount();
+    const mutationTitle = new MutationObserver(mutateCount);
+    /*mutationTitle.observe(document.querySelector('title') as HTMLElement, {
+      characterData: true,
+      childList: true,
+      subtree: false
+    });*/
+    const mutationAnchor = new MutationObserver(mutateCount);
+    /*mutationAnchor.observe(document.querySelector(notificationsAnchor) as HTMLElement, {
+      characterData: true,
+      childList: false,
+      subtree: false
+    });*/
+    mutateCount();
 
     return () => {
-      offTitle();
-      offAnchor();
+      mutationTitle.disconnect();
+      mutationAnchor.disconnect();
     };
   }, [unreadCount]);
 
@@ -318,11 +332,9 @@ const NotificationsPopup = (): React.ReactElement | null => {
         id="dt-notifications"
         className="dt-notifications"
         aria-expanded={isOpen}
-        onClick={(e) => {
-          closeOpenMenus();
-        }}
+        onClick={closeOpenMenus}
       >
-        <Header>
+        <Header $dark={isDarkTheme}>
           <Button
             tabIndex={0}
             onClick={handleMarkRead}
@@ -348,6 +360,7 @@ const NotificationsPopup = (): React.ReactElement | null => {
           <Button
             tabIndex={0}
             className="dt-close"
+            title="Close notifications"
             onClick={handleClose}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {

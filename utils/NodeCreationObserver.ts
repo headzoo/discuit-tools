@@ -27,15 +27,14 @@ function onMutationCallback() {
 }
 
 function invokeCallbacks(selector) {
-  // console.log('Invoke callbacks of the selector: ' + selector);
   const callbacks = listeners[selector].callbacks;
   const elements = document.querySelectorAll(selector);
   const newElements = filterNewElements(elements);
   if (newElements.length > 0) {
     if (listeners[selector].removeOnFirstMatch) {
-      removeListener(selector);
+      removeListener(selector, true);
     }
-    // console.log('Number of matched new elements: ' + newElements.length);
+
     newElements.forEach(function (element) {
       callbacks.forEach(function (callback) {
         callback.call(element, element);
@@ -59,7 +58,6 @@ function filterNewElements(elements: NodeListOf<Element>): Element[] {
 
 function observe() {
   if (mutationObserver == null) {
-    // console.log('Start observing document');
     mutationObserver = new MutationObserver(onMutationCallback);
     mutationObserver.observe(document.documentElement, options);
   }
@@ -69,7 +67,6 @@ function stopObserving() {
   if (mutationObserver != null) {
     mutationObserver.disconnect();
     mutationObserver = null;
-    // console.log('Stopped observing document');
   }
 }
 
@@ -97,13 +94,16 @@ export const onCreation = (
   };
 };
 
-function removeListener(selector, callback: (element: Element) => void) {
-  // console.log('removing callback of the selector: ' + selector);
+function removeListener(selector, callback: ((element: Element) => void) | true) {
   if (listeners[selector]) {
     const callbacks = listeners[selector].callbacks;
-    const index = callbacks.indexOf(callback);
-    if (index > -1) {
-      callbacks.splice(index, 1);
+    if (callback === true) {
+      listeners[selector].callbacks = [];
+    } else {
+      const index = callbacks.indexOf(callback);
+      if (index > -1) {
+        callbacks.splice(index, 1);
+      }
     }
   }
   if (listeners[selector].callbacks.length == 0) {

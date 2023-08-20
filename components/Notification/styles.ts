@@ -23,7 +23,7 @@ export const Item = styled.a<{ $dark: boolean }>`
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 3px #ffffff80;
+    box-shadow: 0 0 0 3px ${(p) => (p.$dark ? '#ffffff80' : '#a7a7a780')};
   }
 
   &.unseen {

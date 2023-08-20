@@ -23,8 +23,10 @@ onCreation('.post-card-card', (node) => {
     node.classList.add('post-card-card--image');
 
     const imgWrap = node.querySelector('.post-card-link-image-img') as HTMLElement;
+    if (!imgWrap) return;
+
     const img = imgWrap.querySelector('img') as HTMLElement;
-    if (img && imgWrap) {
+    if (img) {
       const loader = new Image();
       loader.onload = () => {
         imgWrap.style.backgroundImage = `url(${href})`;

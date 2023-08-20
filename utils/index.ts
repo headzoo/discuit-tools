@@ -74,3 +74,12 @@ export const calculateNewDimensions = (originalWidth: number, originalHeight: nu
     height: newHeight
   };
 };
+
+/**
+ * Returns a boolean value indicating whether the user has dark mode enabled.
+ */
+export const isDarkMode = (): boolean => {
+  const element = document.querySelector('html') as HTMLElement;
+
+  return element && element.classList.contains('theme-dark');
+};

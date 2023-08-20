@@ -15,9 +15,11 @@ export const Container = styled.div<ContainerProps>`
   font-size: 14px;
   color: ${(p) => (p.$dark ? '#FFF' : '#323232')};
   background-color: ${(p) => (p.$dark ? '#202020' : '#FFFFFF')};
-  border: 1px solid ${(p) => (p.$dark ? '#ffffff14' : 'transparent')};
+  border: 1px solid ${(p) => (p.$dark ? '#ffffff14' : '#d9d9d9')};
   display: ${(p) => (p.$open ? 'flex' : 'none')};
   flex-direction: column;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
 
   .dt-scrollbars {
     transition: height 5s ease;
@@ -35,12 +37,12 @@ export const Empty = styled.div`
   text-align: center;
 `;
 
-export const Header = styled.div`
+export const Header = styled.div<{ $dark: boolean }>`
   display: flex;
   align-items: center;
   justify-content: flex-end;
   padding: 1.5rem;
-  border-bottom: 1px solid #ffffff14;
+  border-bottom: 1px solid ${(p) => (p.$dark ? '#ffffff14' : '#d9d9d9')};
 
   span {
     margin-right: 2rem;
@@ -73,15 +75,21 @@ export const Footer = styled.div<{ $dark: boolean }>`
   justify-content: center;
   text-transform: uppercase;
   padding: 1.5rem;
-  border-top: 1px solid #ffffff14;
+  border-top: 1px solid ${(p) => (p.$dark ? '#ffffff14' : '#d9d9d9')};
   background-color: ${(p) => (p.$dark ? '#242424' : '#ededed')};
 
   a {
     color: ${(p) => (p.$dark ? '#ffffff' : '#343434')};
     text-decoration: none;
+    border-radius: 4px;
 
     &:hover {
       text-decoration: underline;
+    }
+
+    &:focus {
+      outline: 0;
+      box-shadow: 0 0 0 3px ${(p) => (p.$dark ? '#ffffff80' : '#a7a7a780')};
     }
   }
 `;
